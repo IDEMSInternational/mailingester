@@ -1,0 +1,17 @@
+{
+  "mail_dir": "inbox",
+  "storage": {
+    "name": "mailingester.storage.LocalFileSystem",
+    "args": {
+      "root": "storage"
+    }
+  },
+  "extractors": [
+    {
+      "name": "mailingester.extractors.ZambiaExtractor",
+      "args": {
+        "allowed": ["user@example.com"]
+      }
+    }
+  ]
+}
