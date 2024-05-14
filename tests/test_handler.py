@@ -1,4 +1,3 @@
-from email.message import EmailMessage
 from mailbox import Maildir
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -48,7 +47,7 @@ def test_google_storage():
             root,
             GoogleCloudStorage(Path("test"), "zambia_pdf_forecasts"),
         )
-        msg = message_factory()
+        msg = create_message()
 
         handler.handle_message(msg)
 

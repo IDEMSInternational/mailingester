@@ -1,5 +1,3 @@
-from email.message import EmailMessage
-
 from mailingester.models import Email
 from tests.factories import create_message
 

@@ -24,4 +24,5 @@ def test_extract():
 
     assert len(items) == 2
     assert items[0].filename == Path("html/zero/threes/2024_04_22.html")
+    assert items[0].data == "<p>Body HTML</p>\n".encode("utf-8")
     assert items[1].filename == Path("attachments/zero/threes/2024_04_22/example.txt")

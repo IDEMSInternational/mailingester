@@ -6,6 +6,7 @@ from mailingester.models import Config, Content, Email
 
 
 class ZambiaExtractor:
+
     def __init__(self, allowed: list[str]):
         self.allowed_addresses = allowed
 
@@ -19,12 +20,14 @@ class ZambiaExtractor:
             date_template="{5}/{6}/{7}",
             date_format_in="%d/%m/%Y",
             date_format_out="%Y_%m_%d",
+            footer_start="\n-- <br />\n",
         )
         path = text_to_path(config, email.subject)
-        html: Content = email.html
+        html = email.html
 
         if html:
             html.filename = "html" / path.with_suffix(".html")
+            html.data = strip_footer(config.footer_start, html.data)
             items.append(html)
 
         for item in email.attachments:
@@ -52,3 +55,12 @@ def text_to_path(config: Config, text: str) -> Path:
     ).strftime(config.date_format_out)
 
     return Path(config.template.format(*tokens, date=date))
+
+
+def strip_footer(start: str, content: bytes):
+    try:
+        text = content.decode("utf-8")
+        i = text.index(start)
+        return text[:i].encode("utf-8")
+    except Exception:
+        return content

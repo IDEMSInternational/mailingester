@@ -36,7 +36,7 @@ pip install -e '.[dev]'
 
 Run tests.
 ```
-pytest
+python -m pytest
 ```
 
 Run server.

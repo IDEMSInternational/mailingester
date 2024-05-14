@@ -7,13 +7,7 @@ def create_message(subject: str = "Subject") -> EmailMessage:
     msg["Subject"] = subject
     msg.set_content("Body text")
     msg.add_alternative(
-        """\
-<html>
-  <body>
-    <p>Body HTML</p>
-  </body>
-</html>
-        """,
+        "<p>Body HTML</p>\n\n-- <br />\nFooter",
         subtype="html",
     )
     msg.add_attachment(
