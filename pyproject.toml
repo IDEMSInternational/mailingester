@@ -4,7 +4,7 @@ requires = ["setuptools"]
 
 [project]
 name = "mailingester"
-version = "0.1.0"
+version = "0.2.0"
 description = "Extract information from emails"
 authors = [
     {name = "IDEMS International", email = "communications@idems.international"},
