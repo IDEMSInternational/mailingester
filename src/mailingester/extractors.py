@@ -20,14 +20,20 @@ class ZambiaExtractor:
             date_template="{5}/{6}/{7}",
             date_format_in="%d/%m/%Y",
             date_format_out="%Y_%m_%d",
-            footer_start="\n-- <br />\n",
+            footer_start="-- <br />\nYou received this message",
         )
         path = text_to_path(config, email.subject)
         html = email.html
 
         if html:
             html.filename = "html" / path.with_suffix(".html")
-            html.data = strip_footer(config.footer_start, html.data)
+            html.data = bytes(
+                strip_footer(
+                    config.footer_start,
+                    convert_line_endings(str(html.data, "utf-8")),
+                ),
+                "utf-8",
+            )
             items.append(html)
 
         for item in email.attachments:
@@ -57,10 +63,13 @@ def text_to_path(config: Config, text: str) -> Path:
     return Path(config.template.format(*tokens, date=date))
 
 
-def strip_footer(start: str, content: bytes):
+def convert_line_endings(text: str):
+    return text.replace("\r\n", "\n")
+
+
+def strip_footer(start: str, text: str):
     try:
-        text = content.decode("utf-8")
         i = text.index(start)
-        return text[:i].encode("utf-8")
+        return text[:i]
     except Exception:
-        return content
+        return text
