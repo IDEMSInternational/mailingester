@@ -44,6 +44,11 @@ Run server.
 python -m aiosmtpd -u -n -c mailingester.handlers.MailServer config.json
 ```
 
+Send emails to the server.
+```
+python -m tests.mail localhost 8025 example.eml
+```
+
 # Configuration
 
 The server is configured via a JSON file. See [config.json] for an example. The available settings are listed below.
