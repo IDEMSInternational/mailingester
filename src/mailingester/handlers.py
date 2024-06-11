@@ -1,3 +1,4 @@
+import logging
 import traceback
 from email.message import EmailMessage
 from pathlib import Path
@@ -9,6 +10,8 @@ from pydantic_core import from_json
 from pydantic_settings import BaseSettings
 
 from mailingester.models import Content, Email
+
+logger = logging.getLogger(__name__)
 
 
 class CallableConfig(BaseModel):
@@ -41,7 +44,7 @@ class MailServer(Mailbox):
 
             self.archive(key, message)
             self.mailbox.remove(key)
-            print(
+            logger.info(
                 {
                     "msg": "Extraction succeeded",
                     "key": key,
@@ -52,7 +55,7 @@ class MailServer(Mailbox):
             )
         except Exception as ex:
             traceback.print_exc()
-            print({"msg": "Extraction failed", "key": key, "error": ex})
+            logger.error({"msg": "Extraction failed", "key": key, "error": ex})
 
     def find_extractor(self, email: Email):
         return next(e for e in self.extractors if e.can_extract(email))
@@ -68,13 +71,18 @@ class MailServer(Mailbox):
 
     @classmethod
     def from_cli(cls, parser, *args):
+        logging.basicConfig(
+            datefmt="%Y-%m-%dT%H:%M:%S",
+            format="%(asctime)s.%(msecs)03d %(levelname)s %(name)s %(message)s",
+            level=logging.INFO,
+        )
         config_file = args[0] if args else "config.json"
-        print({"msg": "Config file identified", "path": config_file})
+        logger.info({"msg": "Config file identified", "path": config_file})
 
         with open(config_file, "r") as f:
             settings = Settings(**from_json(f.read()))
 
-        print({"msg": "Config file loaded", "settings": settings})
+        logger.info({"msg": "Config file loaded", "settings": settings})
 
         return cls(
             settings.mail_dir,
