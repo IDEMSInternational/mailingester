@@ -1,3 +1,4 @@
+import traceback
 from email.message import EmailMessage
 from pathlib import Path
 from typing import Any
@@ -43,12 +44,14 @@ class MailServer(Mailbox):
             print(
                 {
                     "msg": "Extraction succeeded",
+                    "key": key,
                     "sender": email.sender,
                     "subject": email.subject,
-                    "key": key,
+                    "extractor": type(extractor),
                 }
             )
         except Exception as ex:
+            traceback.print_exc()
             print({"msg": "Extraction failed", "key": key, "error": ex})
 
     def find_extractor(self, email: Email):

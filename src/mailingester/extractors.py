@@ -5,13 +5,16 @@ from pathlib import Path
 from mailingester.models import Config, Content, Email
 
 
-class ZambiaExtractor:
+class Extractor:
 
     def __init__(self, allowed: list[str]):
         self.allowed_addresses = allowed
 
     def can_extract(self, email: Email) -> bool:
         return any(address in email.sender for address in self.allowed_addresses)
+
+
+class ZambiaExtractor(Extractor):
 
     def extract(self, email: Email) -> list[Content]:
         items = []
@@ -41,6 +44,35 @@ class ZambiaExtractor:
             items.append(item)
 
         return items
+
+
+class MalawiExtractor(Extractor):
+
+    def extract(self, email: Email) -> list[Content]:
+        items = []
+
+        for item in email.attachments:
+            path = email.date.strftime("%Y_%m_%d")
+            filename = self.translate_filename(str(item.filename))
+
+            item.filename = Path("attachments") / path / filename
+            items.append(item)
+
+        return items
+
+    def translate_filename(self, filename: str):
+        translation_map = {
+            "forecast": "forecast",
+            "morning": "bulletin_morning",
+            "evening": "bulletin_evening",
+        }
+        lower = filename.lower()
+
+        for key, stem in translation_map.items():
+            if key in lower:
+                return stem + ".pdf"
+
+        raise Exception("Filename translation failed")
 
 
 def text_to_path(config: Config, text: str) -> Path:
