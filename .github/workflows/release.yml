@@ -1,0 +1,16 @@
+name: Release
+on:
+  release:
+    types:
+      - released
+jobs:
+  test:
+    uses: ./.github/workflows/test.yml
+  build:
+    needs: test
+    uses: ./.github/workflows/publish-container-image.yml
+    secrets:
+      password: ${{ secrets.DOCKERHUB_PASSWORD }}
+    with:
+      repository: ${{ vars.CONTAINER_REPO }}
+      username: ${{ vars.DOCKERHUB_USERNAME }}

@@ -1,0 +1,55 @@
+name: Publish container image
+on:
+  workflow_call:
+    inputs:
+      registry:
+        default: ""
+        required: false
+        type: string
+      repository:
+        required: true
+        type: string
+      username:
+        required: true
+        type: string
+    outputs:
+      image_tag:
+        value: ${{ jobs.publish.outputs.image_tag }}
+    secrets:
+      password:
+        required: true
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Log in to registry
+        uses: docker/login-action@v3
+        with:
+          password: ${{ secrets.password }}
+          registry: ${{ inputs.registry }}
+          username: ${{ inputs.username }}
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+      - name: Discover image tag version
+        id: tag
+        env:
+          REPO: ${{ inputs.repository }}
+        run: |
+          pip install --upgrade setuptools setuptools-scm
+          echo "image_tag=${REPO}:$(python -m setuptools_scm --strip-dev)" >> "${GITHUB_OUTPUT}"
+      - name: Publish
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.tag.outputs.image_tag }}
+    outputs:
+      image_tag: ${{ steps.tag.outputs.image_tag }}
