@@ -48,6 +48,10 @@ class ZambiaExtractor(Extractor):
 
 class MalawiExtractor(Extractor):
 
+    def __init__(self, path_prefix, **kwargs):
+        super().__init__(**kwargs)
+        self.path_prefix = Path(path_prefix)
+
     def extract(self, email: Email) -> list[Content]:
         items = []
 
@@ -55,7 +59,7 @@ class MalawiExtractor(Extractor):
             path = email.date.strftime("%Y_%m_%d")
             filename = self.translate_filename(str(item.filename))
 
-            item.filename = Path("attachments") / path / filename
+            item.filename = self.path_prefix / path / filename
             items.append(item)
 
         return items

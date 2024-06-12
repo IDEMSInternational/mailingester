@@ -7,7 +7,7 @@ from tests.factories import Attachment, create_message
 
 
 def test_extract():
-    ex = MalawiExtractor([])
+    ex = MalawiExtractor(allowed=[], path_prefix="attachments")
     content = bytes("Content", "utf-8")
     attachments = [
         Attachment(
@@ -23,7 +23,6 @@ def test_extract():
             filename="Evening Weather Bulletin issued on 10TH_June, 2024.pdf",
         ),
     ]
-
     email = Email(create_message(attachments=attachments, dt=datetime(2024, 6, 10)))
     items = ex.extract(email)
 
