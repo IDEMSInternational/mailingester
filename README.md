@@ -80,10 +80,17 @@ Contructor arguments:
 
 The extractors key is a list of objects that define the extractors to use. Each extractor is defined by an object with two keys.
 
-- `name`: Python class of the extractor; there is one built-in, `mailingester.extractors.ZambiaExtractor`
+- `name`: Python class of the extractor, e.g. `mailingester.extractors.ZambiaExtractor`
 - `args`: object containing keyword arguments to pass to the constructor of the extractor class
 
-### ZambiaExtractor
+### mailingester.extractors.MalawiExtractor
+
+Contructor arguments:
+
+- `allowed`: list of sender email addresses - a match of any with the sender of an email will indicate that this extractor should be used
+- `path_prefix`: path under which attachments will be stored
+
+### mailingester.extractors.ZambiaExtractor
 
 Contructor arguments:
 
