@@ -1,10 +1,9 @@
 [build-system]
 build-backend = "setuptools.build_meta"
-requires = ["setuptools"]
+requires = ["setuptools>=64", "setuptools-scm>=8"]
 
 [project]
 name = "mailingester"
-version = "0.4.1"
 description = "Extract information from emails"
 authors = [
     {name = "IDEMS International", email = "communications@idems.international"},
@@ -19,6 +18,7 @@ dependencies = [
     "google-cloud-storage",
     "pydantic-settings",
 ]
+dynamic = ["version"]
 
 [project.optional-dependencies]
 dev = [
@@ -34,3 +34,6 @@ build = [
 [project.urls]
 Homepage = "https://github.com/IDEMSInternational/mailingester"
 Repository = "https://github.com/IDEMSInternational/mailingester"
+
+[tool.setuptools_scm]
+version_file = "src/mailingester/_version.py"

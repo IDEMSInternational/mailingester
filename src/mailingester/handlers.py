@@ -9,6 +9,7 @@ from pydantic import BaseModel, ImportString
 from pydantic_core import from_json
 from pydantic_settings import BaseSettings
 
+from mailingester import version
 from mailingester.models import Content, Email
 
 logger = logging.getLogger(__name__)
@@ -77,6 +78,7 @@ class MailServer(Mailbox):
             level=logging.INFO,
         )
         config_file = args[0] if args else "config.json"
+        logger.info({"msg": "Started", "version": version()})
         logger.info({"msg": "Config file identified", "path": config_file})
 
         with open(config_file, "r") as f:
