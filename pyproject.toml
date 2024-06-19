@@ -6,7 +6,7 @@ requires = ["setuptools>=64", "setuptools-scm>=8"]
 name = "mailingester"
 description = "Extract information from emails"
 authors = [
-    {name = "IDEMS International", email = "communications@idems.international"},
+    {name = "IDEMS International", email = "contact@idems.international"},
 ]
 readme = "README.md"
 requires-python = ">=3.11"
