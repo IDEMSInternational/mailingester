@@ -17,6 +17,7 @@ dependencies = [
     "aiosmtpd",
     "google-cloud-storage",
     "pydantic-settings",
+    "python-slugify",
 ]
 dynamic = ["version"]
 
