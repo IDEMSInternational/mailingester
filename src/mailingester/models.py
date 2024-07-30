@@ -50,13 +50,3 @@ class Email:
     @property
     def subject(self) -> str:
         return self.msg["Subject"]
-
-
-@dataclass
-class Config:
-    template: str
-    date_template: str = ""
-    date_format_in: str = ""
-    date_format_out: str = ""
-    footer_start: str = None
-    regex: str = r"\w+"

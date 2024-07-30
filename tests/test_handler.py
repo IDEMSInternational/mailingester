@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from mailbox import Maildir
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -20,14 +21,18 @@ def test_handle_message():
         handler = MailServer(
             root,
             LocalFileSystem(root),
-            [ZambiaExtractor(["Example <user@example.com>"])],
+            [
+                ZambiaExtractor(
+                    allowed=["Example <user@example.com>"],
+                    path_prefix="zm",
+                )
+            ],
         )
-        msg = create_message(subject="zero one two three four 14/04/2024")
+        msg = create_message(dt=datetime(2024, 7, 29), subject="subject")
 
         handler.handle_message(msg)
 
-        assert (root / "html/zero/threes/2024_04_14.html").exists()
-        assert (root / "attachments/zero/threes/2024_04_14/example.txt").exists()
+        assert (root / "zm/20240729/subject.html").exists()
         assert len(list((root / "archive").iterdir())) == 1
         assert not Maildir(root / "Maildir").items()
 
