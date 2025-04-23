@@ -22,3 +22,7 @@ def test_extract():
         "zm/20240729/zambia-evening-weather-forecast-monday-29-06-2024.html"
     )
     assert items[0].data == "<p>Body HTML</p>\n\n".encode("utf-8")
+    assert items[0].meta == {
+        "sender": "Example <user@example.com>",
+        "subject": "ZAMBIA EVENING WEATHER FORECAST: MONDAY (29/06/2024)",
+    }

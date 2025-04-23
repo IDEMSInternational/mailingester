@@ -15,6 +15,13 @@ class Extractor:
         return any(address in email.sender for address in self.allowed_addresses)
 
 
+    def extract_meta(self, email: Email) -> dict:
+        return {
+            "sender": email.sender,
+            "subject": email.subject,
+        }
+
+
 class ZambiaExtractor(Extractor):
     FOOTER_START = "-- <br />\nYou received this message"
 
@@ -34,6 +41,7 @@ class ZambiaExtractor(Extractor):
                 ),
                 "utf-8",
             )
+            html.meta = self.extract_meta(email)
 
         return [html]
 
@@ -41,6 +49,7 @@ class ZambiaExtractor(Extractor):
 class MalawiExtractor(Extractor):
 
     def extract(self, email: Email) -> list[Content]:
+        meta = self.extract_meta(email)
         items = []
 
         for item in email.attachments:
@@ -49,6 +58,7 @@ class MalawiExtractor(Extractor):
                 / email.date.strftime("%Y%m%d")
                 / item.filename.with_stem(slugify(item.filename.stem))
             )
+            item.meta = meta
             items.append(item)
 
         return items

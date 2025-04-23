@@ -38,3 +38,7 @@ def test_extract():
         "mw/20240610/evening-weather-bulletin-issued-on-10th-june-2024.pdf"
     )
     assert all(i.data == "Content".encode("utf-8") for i in items)
+    assert all(
+        i.meta == {"sender": "Example <user@example.com>", "subject": "Subject"}
+        for i in items
+    )
