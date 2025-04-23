@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from email.message import EmailMessage
 from email.utils import parsedate_to_datetime
 from pathlib import Path
@@ -9,6 +9,7 @@ class Content:
     content_type: str
     data: bytes
     filename: Path = None
+    meta: dict = field(default_factory=dict)
 
 
 class Email:

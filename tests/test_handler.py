@@ -1,3 +1,4 @@
+import json
 import os
 from datetime import datetime
 from mailbox import Maildir
@@ -33,6 +34,12 @@ def test_handle_message():
         handler.handle_message(msg)
 
         assert (root / "zm/20240729/subject.html").exists()
+        assert (root / "zm/20240729/subject.html.meta.json").exists()
+        with open(root / "zm/20240729/subject.html.meta.json", "r") as f:
+            assert json.load(f) == {
+                "sender": "Example <user@example.com>",
+                "subject": "subject",
+            }
         assert len(list((root / "archive").iterdir())) == 1
         assert not Maildir(root / "Maildir").items()
 
@@ -67,9 +74,12 @@ def test_google_storage():
         assert not Maildir(root / "Maildir").items()
 
     names = sorted([b.name for b in bucket.list_blobs()])
-    assert len(names) == 3
-    assert names[0].startswith("archive/")
-    assert names[1:] == [
-        "attachments/zero/threes/2024_04_14/example.txt",
-        "html/zero/threes/2024_04_14.html",
-    ]
+    assert len(names) == 2
+    assert names[1].startswith("archive/")
+
+    today = datetime.now().strftime("%Y%m%d")
+    assert names[0] == f"{today}/zero-one-two-three-four-14-04-2024.html"
+    assert bucket.get_blob(names[0]).metadata == {
+        "sender": "Example <user@example.com>",
+        "subject": "zero one two three four 14/04/2024",
+    }
