@@ -26,6 +26,24 @@ class ZambiaExtractor(Extractor):
     FOOTER_START = "-- <br />\nYou received this message"
 
     def extract(self, email: Email) -> list[Content]:
+        pdf = next(
+            (
+                item
+                for item in email.attachments
+                if item.content_type == "application/pdf"
+                or item.filename.suffix.lower() == ".pdf"
+            ),
+            None,
+        )
+        if pdf:
+            pdf.filename = (
+                self.path_prefix
+                / email.date.strftime("%Y%m%d")
+                / slugify(email.subject)
+            ).with_suffix(".pdf")
+            pdf.meta = self.extract_meta(email)
+            return [pdf]
+
         html = email.html
 
         if html:
