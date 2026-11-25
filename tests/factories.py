@@ -4,7 +4,11 @@ from datetime import datetime
 from email.message import EmailMessage
 from email.utils import format_datetime
 
-Attachment = namedtuple("Attachment", ["content", "filename"])
+Attachment = namedtuple(
+    typename="Attachment",
+    field_names=["content", "filename", "content_type"],
+    defaults=["application/octet-stream"],
+)
 
 
 def create_message(
@@ -31,10 +35,15 @@ def create_message(
         ]
 
     for attachment in attachments:
+        try:
+            maintype, subtype = attachment.content_type.split("/", 1)
+        except ValueError:
+            maintype, subtype = "application", "octet-stream"
+
         msg.add_attachment(
             attachment.content,
-            maintype="application",
-            subtype="octet-stream",
+            maintype=maintype,
+            subtype=subtype,
             filename=attachment.filename,
         )
 

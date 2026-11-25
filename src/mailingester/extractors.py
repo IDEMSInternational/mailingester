@@ -14,18 +14,36 @@ class Extractor:
     def can_extract(self, email: Email) -> bool:
         return any(address in email.sender for address in self.allowed_addresses)
 
-
     def extract_meta(self, email: Email) -> dict:
         return {
             "sender": email.sender,
             "subject": email.subject,
         }
 
+    def prepare_attachment(self, email: Email, item: Content):
+        item.filename = (
+            self.path_prefix
+            / email.date.strftime("%Y%m%d")
+            / item.filename.with_stem(slugify(item.filename.stem))
+        )
+        item.meta = self.extract_meta(email)
+
+        return item
+
 
 class ZambiaExtractor(Extractor):
     FOOTER_START = "-- <br />\nYou received this message"
 
     def extract(self, email: Email) -> list[Content]:
+        pdfs = [
+            self.prepare_attachment(email, item)
+            for item in email.attachments
+            if is_pdf(item)
+        ]
+
+        if pdfs:
+            return pdfs
+
         html = email.html
 
         if html:
@@ -49,19 +67,7 @@ class ZambiaExtractor(Extractor):
 class MalawiExtractor(Extractor):
 
     def extract(self, email: Email) -> list[Content]:
-        meta = self.extract_meta(email)
-        items = []
-
-        for item in email.attachments:
-            item.filename = (
-                self.path_prefix
-                / email.date.strftime("%Y%m%d")
-                / item.filename.with_stem(slugify(item.filename.stem))
-            )
-            item.meta = meta
-            items.append(item)
-
-        return items
+        return [self.prepare_attachment(email, item) for item in email.attachments]
 
 
 def convert_line_endings(text: str):
@@ -74,3 +80,9 @@ def strip_footer(start: str, text: str):
         return text[:i]
     except Exception:
         return text
+
+
+def is_pdf(item: Content):
+    return (
+        item.content_type == "application/pdf" or item.filename.suffix.lower() == ".pdf"
+    )
